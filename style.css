@@ -367,7 +367,7 @@ header {
 }
 
 .menu-card {
-    background: white;
+    background: var(--bg-white);
     border: 1px solid var(--border);
     border-radius: 16px;
     overflow: hidden;
@@ -490,7 +490,7 @@ header {
 .product-modal-content {
     position: relative;
     width: min(960px, 100%);
-    background: white;
+    background: var(--bg-white);
     border-radius: 24px;
     overflow: hidden;
     display: grid;
@@ -689,7 +689,7 @@ header {
 
 /* CARDS HALAMAN INFO, LOKASI, KONTAK */
 .info-card {
-    background: white;
+    background: var(--bg-white);
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 25px;
@@ -819,7 +819,7 @@ header {
 }
 
 .modal-content {
-    background: white;
+    background: var(--bg-white);
     width: 100%;
     max-width: 480px;
     border-radius: 20px 20px 0 0;
@@ -835,6 +835,14 @@ header {
     padding-bottom: 12px;
     border-bottom: 1px solid var(--border);
     margin-bottom: 15px;
+}
+
+#cartModal .modal-header button {
+    color: var(--text-dark) !important;
+}
+
+#cartModal #cartFormContainer > div {
+    background: var(--bg-light) !important;
 }
 
 .cart-item {
@@ -897,6 +905,7 @@ header {
 @media (min-width: 600px) {
     .modal-overlay { align-items: center; }
     .modal-content { border-radius: 20px; }
+}
 
 
 @media (max-width: 599px) {
@@ -948,6 +957,61 @@ header {
     .page-subtitle {
         font-size: 14px;
         line-height: 1.6;
+    }
+
+    .grid-2,
+    .grid-3 {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .info-card {
+        padding: 18px 16px;
+        border-radius: 14px;
+    }
+
+    .hero-banner {
+        padding: 24px 16px;
+        border-radius: 16px;
+    }
+
+    .hero-banner h2 {
+        font-size: 21px;
+    }
+
+    .stat-box {
+        padding: 16px;
+    }
+
+    .contact-card-btn {
+        padding: 13px 12px;
+        gap: 10px;
+    }
+
+    .contact-card-btn > div:first-child {
+        min-width: 0;
+    }
+
+    .contact-card-btn > div:first-child > div:last-child {
+        min-width: 0;
+    }
+
+    .contact-card-btn > div:first-child > div:last-child div {
+        overflow-wrap: anywhere;
+    }
+
+    .map-container {
+        height: 220px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        min-height: 42px;
+    }
+
+    .faq-item {
+        padding: 14px;
     }
 
     .menu-grid {
@@ -1114,7 +1178,7 @@ header {
 
 /* Stat Box */
 .stat-box {
-    background: white;
+    background: var(--bg-white);
     border: 1px solid var(--border);
     padding: 20px;
     border-radius: 16px;
@@ -1160,7 +1224,7 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: white;
+    background: var(--bg-white);
     border: 1px solid var(--border);
     padding: 16px;
     border-radius: 14px;
@@ -1189,7 +1253,7 @@ header {
 
 /* FAQ Box */
 .faq-item {
-    background: white;
+    background: var(--bg-white);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 15px;
