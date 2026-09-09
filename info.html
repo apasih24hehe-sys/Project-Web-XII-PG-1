@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informasi - Dapur UMKM</title>
+    <script>
+        if (localStorage.getItem('umkm_theme') === 'dark') {
+            document.documentElement.dataset.theme = 'dark';
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo"><i class="fa-solid fa-utensils"></i> Dapur UMKM</a>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Menu</a>
+                <a href="info.html" class="nav-link active">Info</a>
+                <a href="alamat.html" class="nav-link">Lokasi</a>
+                <a href="kontak.html" class="nav-link">Kontak</a>
+            </nav>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Aktifkan mode gelap" title="Ganti tema">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="page-container">
+        <!-- Hero Banner -->
+        <div class="hero-banner">
+            <h2>Rasa Autentik Kuliner Rumahan</h2>
+            <p>Dibuat segar setiap hari dengan bumbu pilihan dan kasih sayang.</p>
+        </div>
+
+        <!-- Statistik -->
+        <div class="grid-3">
+            <div class="stat-box">
+                <i class="fa-solid fa-face-smile"></i>
+                <div class="stat-number">1.500+</div>
+                <div class="stat-label">Pelanggan Puas</div>
+            </div>
+            <div class="stat-box">
+                <i class="fa-solid fa-bowl-food"></i>
+                <div class="stat-number">20+</div>
+                <div class="stat-label">Pilihan Menu</div>
+            </div>
+            <div class="stat-box">
+                <i class="fa-solid fa-star"></i>
+                <div class="stat-number">4.9 / 5</div>
+                <div class="stat-label">Rating Ulasan</div>
+            </div>
+        </div>
+
+        <!-- Keunggulan Grid -->
+        <h2 style="font-size:18px; margin-bottom:15px;">Mengapa Memilih Kami?</h2>
+        <div class="grid-2">
+            <div class="info-card">
+                <h3><i class="fa-solid fa-shield-halal"></i> 100% Halal & Higienis</h3>
+                <p>Seluruh bahan olahan dipastikan bersertifikasi halal dan diproses bersih sesuai standar kebersihan Dapur UMKM.</p>
+            </div>
+            <div class="info-card">
+                <h3><i class="fa-solid fa-leaf"></i> Bahan Alami Segar</h3>
+                <p>Tanpa pengawet buatan. Kami meracik bumbu halus sendiri setiap pagi untuk menjaga cita rasa asli tetap terjaga.</p>
+            </div>
+            <div class="info-card">
+                <h3><i class="fa-solid fa-truck-fast"></i> Pengiriman Cepat</h3>
+                <p>Pesanan dimasak langsung (*fresh on order*) dan diantar selagi hangat sampai ke depan pintu rumah Anda.</p>
+            </div>
+            <div class="info-card">
+                <h3><i class="fa-solid fa-hand-holding-dollar"></i> Harga Terjangkau</h3>
+                <p>Kualitas rasa kelas restoran dengan harga lokal yang ramah di kantong pelajar maupun keluarga.</p>
+            </div>
+        </div>
+
+        <!-- Testimonial Pelanggan -->
+        <h2 style="font-size:18px; margin:25px 0 15px;">Kata Mereka</h2>
+        <div class="grid-2">
+            <div class="info-card" style="margin-bottom:0;">
+                <p style="font-style:italic;">“Ayam Geprek Sambal Koreknya benar-benar ketagihan! Pedasnya pas dan ayamnya renyah banget.”</p>
+                <p style="margin-top:10px; font-weight:700; color:var(--text-dark);">— Anita, Kebon Jeruk</p>
+            </div>
+            <div class="info-card" style="margin-bottom:0;">
+                <p style="font-style:italic;">“Pesan buat acara arisan rumah, semua tamu suka sama Dimsum dan Es Kopi Susunya. Pengiriman tepat waktu.”</p>
+                <p style="margin-top:10px; font-weight:700; color:var(--text-dark);">— Pak Budi, Jakarta Barat</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL POPUP KERANJANG -->
+    <div class="modal-overlay" id="cartModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Rincian Pesanan</h3>
+                <button onclick="closeCartModal()" style="border:none; background:none; cursor:pointer; font-size:18px;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="cartItemsList">
+            <div style="background:var(--bg-light); padding:15px; border-radius:12px; margin:15px 0;">
+                <div class="form-group">
+                    <div id="cartFormContainer">
+                    <label>NAMA PEMESAN</label>
+                    <input type="text" id="custName" placeholder="Contoh: Budi">
+            
+                
+                <div class="form-group">
+                    <label>OPSI PESANAN</label>
+                    <select id="orderType">
+                        <option value="Delivery / Antar ke Rumah">Delivery / Antar ke Rumah</option>
+                        <option value="Takeaway / Ambil Sendiri">Takeaway / Ambil Sendiri</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>JURUSAN / KELAS</label>
+                    <textarea id="custAddress" rows="2" placeholder="Isi alamat rumah Anda"></textarea>
+                </div>
+            </div>
+            <button class="wa-submit-btn" onclick="sendOrderToWhatsApp()"><i class="fa-brands fa-whatsapp"></i> Pesan via WhatsApp</button>
+                     </div>
+            
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="footer-logo"><i class="fa-solid fa-utensils"></i></div>
+                <div>
+                    <h3>Dapur UMKM</h3>
+                    <p>Menu sehat, nikmat, dan siap dipesan.</p>
+                </div>
+            </div>
+
+            <div class="footer-contact">
+                <a href="https://wa.me/6281234567890" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                <a href="kontak.html"><i class="fa-solid fa-location-dot"></i> Alamat</a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 Dapur UMKM • Copyright by "XII PG 1"</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

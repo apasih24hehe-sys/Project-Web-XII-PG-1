@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dapur UMKM - Menu & Pesan Online</title>
+    <script>
+        if (localStorage.getItem('umkm_theme') === 'dark') {
+            document.documentElement.dataset.theme = 'dark';
+        }
+        if (localStorage.getItem('umkm_gate_seen') === '1') {
+            document.documentElement.classList.add('gate-seen');
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="gate-open">
+
+    <div id="gateScreen" class="gate-screen">
+        <div class="gate-card">
+            <div class="gate-badge">Selamat Datang</div>
+            <h1>Dapur UMKM</h1>
+            <p class="gate-text">
+                Nikmati sajian masakan dan minuman lokal dengan cita rasa hangat, cepat, dan siap diantar ke rumah atau diambil langsung.
+            </p>
+            <ul class="gate-points">
+                <li><i class="fa-solid fa-circle-check"></i> Menu yang dibuat dengan bahan segar</li>
+                <li><i class="fa-solid fa-circle-check"></i> Pilihan makanan, camilan, dan minuman variatif</li>
+                <li><i class="fa-solid fa-circle-check"></i> Proses pesanan mudah lewat WhatsApp</li>
+            </ul>
+            <button class="gate-btn" onclick="continueToMenu()">
+                Lanjut ke Menu <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo"><i class="fa-solid fa-utensils"></i> Dapur UMKM</a>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link active">Menu</a>
+                <a href="info.html" class="nav-link">Info</a>
+                <a href="alamat.html" class="nav-link">Lokasi</a>
+                <a href="kontak.html" class="nav-link">Kontak</a>
+            </nav>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Aktifkan mode gelap" title="Ganti tema">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="page-container">
+        <h1 class="page-title">Pilih Menu Favoritmu</h1>
+        <p class="page-subtitle">Santapan lezat buatan UMKM lokal, siap diantar atau diambil langsung.</p>
+
+        <div class="categories">
+            <button class="cat-btn active" onclick="filterCategory('semua', this)">Semua</button>
+            <button class="cat-btn" onclick="filterCategory('makanan', this)">Makanan</button>
+            <button class="cat-btn" onclick="filterCategory('minuman', this)">Minuman</button>
+        </div>
+
+        <div class="menu-grid" id="menuGrid"></div>
+    </div>
+
+    <!-- SUMMARY KERANJANG MELAYANG -->
+    <div class="floating-cart hidden" id="floatingCart">
+        <div>
+            <span id="cartQtyPill" style="background:var(--primary); padding:3px 10px; border-radius:12px; font-size:12px; font-weight:700; margin-right:8px;">0 Item</span>
+            <span id="cartTotalPrice" style="font-weight:700;">Rp 0</span>
+        </div>
+        <button class="view-cart-btn" onclick="toggleCartModal()">Lihat Pesanan <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+
+    <!-- MODAL POPUP KERANJANG SIMPEL -->
+    <div class="modal-overlay" id="cartModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="font-size:18px;">Rincian Pesanan</h3>
+                <button onclick="closeCartModal()" style="border:none; background:none; cursor:pointer; font-size:18px;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div id="cartItemsList"></div>
+            
+            <div id="cartFormContainer">
+            <div style="background:var(--bg-light); padding:15px; border-radius:12px; margin:15px 0;">
+                <div class="form-group">
+                    <label>NAMA PEMESAN</label>
+                    <input type="text" id="custName" placeholder="Contoh: Budi">
+                </div>
+                <div class="form-group">
+                    <label>OPSI PESANAN</label>
+                    <select id="orderType">
+                        <option value="Delivery / Antar ke Rumah">Delivery / Antar ke Rumah</option>
+                        <option value="Takeaway / Ambil Sendiri">Takeaway / Ambil Sendiri</option>
+                        <option value="Makan di Tempat (Dine-in)">Makan di Tempat (Dine-in)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>ALAMAT LENGKAP / NOMOR MEJA</label>
+                    <textarea id="custAddress" rows="2" placeholder="Isi alamat rumah atau no. meja Anda"></textarea>
+                </div>
+            </div>
+
+            <button class="wa-submit-btn" onclick="sendOrderToWhatsApp()">
+                <i class="fa-brands fa-whatsapp"></i> Pesan via WhatsApp
+            </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="productModal" class="product-modal">
+        <div class="product-modal-backdrop" onclick="closeProductModal()"></div>
+        <div class="product-modal-content">
+            <button class="product-close" onclick="closeProductModal()" aria-label="Tutup detail menu">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="product-gallery">
+                <button class="gallery-nav gallery-prev" aria-label="Gambar sebelumnya"><i class="fa-solid fa-chevron-left"></i></button>
+                <img class="product-main-image" src="" alt="Produk detail">
+                <button class="gallery-nav gallery-next" aria-label="Gambar berikutnya"><i class="fa-solid fa-chevron-right"></i></button>
+                <div class="gallery-dots"></div>
+            </div>
+
+            <div class="product-details">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px;">
+                    <h3 class="product-name"></h3>
+                    <span class="product-price"></span>
+                </div>
+                <p class="product-desc"></p>
+                <div class="product-highlight-box">
+                    <strong>Kenapa pelanggan suka:</strong>
+                    <p class="product-highlight"></p>
+                </div>
+                <div class="ingredient-box">
+                    <h4>Bahan utama</h4>
+                    <ul class="ingredient-list"></ul>
+                </div>
+                <button class="product-add-btn"><i class="fa-solid fa-cart-plus"></i> Tambah ke Keranjang</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="footer-logo"><i class="fa-solid fa-utensils"></i></div>
+                <div>
+                    <h3>Dapur UMKM</h3>
+                    <p>Menu sehat, nikmat, dan siap dipesan.</p>
+                </div>
+            </div>
+
+            <div class="footer-contact">
+                <a href="https://wa.me/6281234567890" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                <a href="kontak.html"><i class="fa-solid fa-location-dot"></i> Alamat</a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 Dapur UMKM • Copyright by "XII PG 1"</p>
+        </div>
+    </footer>
+</body>
+</html>
