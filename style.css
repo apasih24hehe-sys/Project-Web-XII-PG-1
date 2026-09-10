@@ -97,6 +97,7 @@ body {
     background-color: var(--bg-white);
     color: var(--text-dark);
     padding-bottom: 130px;
+    padding-top: 64px;
     transition: background-color 0.25s ease, color 0.25s ease;
 }
 
@@ -106,7 +107,7 @@ body.gate-open {
 
 .gate-screen {
     position: fixed;
-    inset: 0;
+        bottom: max(136px, calc(env(safe-area-inset-bottom) + 124px));
     background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.98), rgba(var(--primary-rgb), 0.86));
     display: flex;
     align-items: center;
@@ -213,8 +214,10 @@ html.gate-seen .gate-screen {
 
 /* NAVBAR */
 header {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
@@ -483,6 +486,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 8px;
 }
 
 .card-price {
@@ -502,6 +506,21 @@ header {
     font-size: 13px;
     z-index: 2;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cart-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.clear-cart-btn {
+    border: 0;
+    background: transparent;
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
 }
 
 .add-btn:hover,
@@ -876,6 +895,19 @@ header {
     white-space: nowrap;
 }
 
+.cart-summary-label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.cart-summary-label i {
+    margin-right: 5px;
+    color: var(--primary);
+}
+
 .floating-cart.hidden {
     transform: translate(-50%, 80px);
     opacity: 0;
@@ -891,6 +923,57 @@ header {
     font-weight: 700;
     cursor: pointer;
     white-space: nowrap;
+}
+
+.cart-add-notification {
+    position: fixed;
+    left: 50%;
+    bottom: 92px;
+    z-index: 1500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: min( calc(100% - 32px), 360px);
+    padding: 13px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    background: #1e272e;
+    color: white;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+    font-size: 13px;
+    font-weight: 700;
+    transform: translate(-50%, 12px);
+    opacity: 0;
+    pointer-events: none;
+    animation: cartNotificationIn 0.28s ease forwards;
+}
+
+.cart-add-notification i {
+    color: #5ee18b;
+    font-size: 18px;
+}
+
+.cart-add-notification.hide {
+    animation: cartNotificationOut 0.38s cubic-bezier(.55, .08, .68, .53) forwards;
+}
+
+@keyframes cartNotificationIn {
+    to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+@keyframes cartNotificationOut {
+    0% {
+        transform: translate(-50%, 0) scale(1);
+        opacity: 1;
+    }
+    45% {
+        transform: translate(-50%, -3px) scale(0.98);
+        opacity: 0.72;
+    }
+    100% {
+        transform: translate(-50%, 22px) scale(0.92);
+        opacity: 0;
+    }
 }
 
 @media (max-width: 480px) {
@@ -927,6 +1010,11 @@ header {
         right: auto;
         bottom: max(12px, env(safe-area-inset-bottom));
         width: calc(100% - 24px);
+    }
+
+    .cart-add-notification {
+        bottom: 84px;
+        font-size: 12px;
     }
 }
 
@@ -1104,6 +1192,15 @@ header {
 
 
 @media (max-width: 599px) {
+    html,
+    body {
+        overflow-x: hidden;
+    }
+
+    body {
+        padding-top: 104px;
+    }
+
     .nav-container {
         flex-wrap: wrap;
         padding: 10px 12px;
@@ -1113,6 +1210,10 @@ header {
     .logo {
         order: 1;
         font-size: 17px;
+        max-width: calc(100% - 48px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .theme-toggle {
@@ -1126,17 +1227,21 @@ header {
         order: 3;
         position: relative;
         left: auto;
-        transform: none;
         width: 100%;
-        justify-content: center;
-        gap: 2px;
         padding-top: 8px;
         border-top: 1px solid var(--border);
+        justify-content: center;
+        gap: 2px;
+        overflow: visible;
+        transform: none;
     }
 
     .nav-link {
-        padding: 6px 8px;
+        flex: 1 1 0;
+        padding: 8px 6px;
         font-size: 12px;
+        text-align: center;
+        white-space: nowrap;
     }
 
     .page-container {
@@ -1246,6 +1351,27 @@ header {
         overflow-wrap: anywhere;
     }
 
+    .share-website-card {
+        padding: 15px;
+    }
+
+    .website-qr {
+        width: 148px;
+        height: 148px;
+        padding: 8px;
+    }
+
+    .website-qr img,
+    .website-qr canvas {
+        width: 132px !important;
+        height: 132px !important;
+    }
+
+    .map-container,
+    .map-container iframe {
+        max-width: 100%;
+    }
+
     .map-container {
         height: 220px;
     }
@@ -1270,33 +1396,41 @@ header {
     }
 
     .product-modal {
-        padding: 12px;
+        padding: 10px;
     }
 
     .product-modal-content {
+        width: calc(100% - 8px);
         max-height: calc(100vh - 24px);
         overflow-y: auto;
         border-radius: 18px;
     }
 
     .product-gallery {
-        height: 230px;
+        height: 180px;
     }
 
     .product-details {
-        padding: 64px 16px 18px;
+        padding: 54px 14px 14px;
     }
 
     .product-name {
-        font-size: 22px;
+        font-size: 19px;
     }
 
     .product-desc {
+        margin: 8px 0 12px;
+        font-size: 12px;
         line-height: 1.6;
     }
 
     .product-details > div:first-child {
         align-items: flex-start !important;
+        flex-wrap: wrap;
+    }
+
+    .product-price {
+        margin-left: auto;
     }
 
     .modal-content {
@@ -1313,11 +1447,14 @@ header {
     .floating-cart > div {
         min-width: 0;
         font-size: 13px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .view-cart-btn {
         padding: 9px 11px;
-        font-size: 12px;
+        font-size: 11px;
+        flex-shrink: 0;
     }
 
     .site-footer {

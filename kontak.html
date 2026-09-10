@@ -93,19 +93,19 @@
             <!-- Form Pesan Singkat -->
             <div class="info-card">
                 <h3><i class="fa-solid fa-paper-plane"></i> Kirim Pesan / Kritik & Saran</h3>
-                <form onsubmit="alert('Pesan Anda telah terkirim!'); return false;">
-                     <div id="cartFormContainer">
+                <form id="feedbackForm" onsubmit="sendFeedbackToWhatsApp(event)">
+                     <div class="feedback-form-fields">
                     <div class="form-group">
                         <label>NAMA</label>
-                        <input type="text" placeholder="Nama Anda" required>
+                            <input type="text" id="feedbackName" placeholder="Nama Anda" required>
                     </div>
                     <div class="form-group">
                         <label>EMAIL / WA</label>
-                        <input type="text" placeholder="Nomor kontak Anda" required>
+                            <input type="text" id="feedbackContact" placeholder="Nomor kontak Anda" required>
                     </div>
                     <div class="form-group">
                         <label>PESAN</label>
-                        <textarea rows="3" placeholder="Tuliskan saran atau pertanyaan katering..." required></textarea>
+                            <textarea id="feedbackMessage" rows="3" placeholder="Tuliskan saran atau pertanyaan katering..." required></textarea>
                     </div>
                     <button type="submit" style="width:100%; background:var(--primary); color:white; border:none; padding:10px; border-radius:20px; font-weight:700; cursor:pointer;">Kirim Pesan</button>
                      </div>

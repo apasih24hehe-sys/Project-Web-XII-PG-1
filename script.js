@@ -158,8 +158,30 @@ function renderMenu(items) {
 
 // LOGIKA TAMBAH & EDIT KERANJANG
 function addToCart(id) {
+    const item = menuItems.find(menuItem => menuItem.id === id);
+    if (!item) return;
+
     cart[id] = (cart[id] || 0) + 1;
     saveAndRefreshCart();
+    showCartAddNotification(item.name, cart[id]);
+}
+
+function showCartAddNotification(itemName, quantity) {
+    const existing = document.querySelector('.cart-add-notification');
+    if (existing) existing.remove();
+
+    const notification = document.createElement('div');
+    notification.className = 'cart-add-notification';
+    notification.innerHTML = `
+        <i class="fa-solid fa-circle-check"></i>
+        <span>${itemName} masuk ke keranjang (${quantity}x)</span>
+    `;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.classList.add('hide');
+        setTimeout(() => notification.remove(), 380);
+    }, 2200);
 }
 
 function changeQty(id, delta) {
@@ -168,6 +190,13 @@ function changeQty(id, delta) {
         if (cart[id] <= 0) delete cart[id];
     }
     saveAndRefreshCart();
+}
+
+function clearCart() {
+    if (Object.keys(cart).length === 0) return;
+    cart = {};
+    saveAndRefreshCart();
+    closeCartModal();
 }
 
 function saveAndRefreshCart() {
@@ -214,6 +243,23 @@ function openProductModal(itemId) {
     modal.querySelector('.product-price').textContent = `Rp ${item.price.toLocaleString('id-ID')}`;
     modal.querySelector('.product-desc').textContent = item.desc;
     modal.querySelector('.product-highlight').textContent = item.highlight;
+
+        function sendFeedbackToWhatsApp(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('feedbackName').value.trim();
+            const contact = document.getElementById('feedbackContact').value.trim();
+            const message = document.getElementById('feedbackMessage').value.trim();
+
+            if (!name || !contact || !message) {
+                showInlineAlert('Nama, kontak, dan pesan wajib diisi.');
+                return;
+            }
+
+            const text = `*KRITIK & SARAN - Penagisa Food Corner*\n\n*Nama:* ${name}\n*Kontak:* ${contact}\n*Pesan:*\n${message}`;
+            window.open(`https://wa.me/${NOMOR_WA_UMKM}?text=${encodeURIComponent(text)}`, '_blank');
+            document.getElementById('feedbackForm').reset();
+        }
 
     const list = modal.querySelector('.ingredient-list');
     list.innerHTML = item.ingredients.map(i => `<li>${i}</li>`).join('');
@@ -438,9 +484,17 @@ function sendOrderToWhatsApp() {
     const type = document.getElementById("orderType").value;
     const addressInput = document.getElementById("custAddress");
     const address = addressInput ? addressInput.value.trim() : "";
+    const noteInput = document.getElementById("orderNote");
+    const note = noteInput ? noteInput.value.trim() : "";
 
     if (!name) {
         showInlineAlert("Harap masukkan nama Anda.");
+        return;
+    }
+
+    if (type === 'Delivery' && !address) {
+        showInlineAlert("Alamat wajib diisi untuk pesanan Delivery.");
+        if (addressInput) addressInput.focus();
         return;
     }
 
@@ -462,8 +516,10 @@ function sendOrderToWhatsApp() {
     const typeLabel = type === 'Delivery' ? 'Delivery / Antar ke Rumah' : 'Takeaway / Ambil Sendiri';
     text += `*Opsi Pesanan:* ${typeLabel}\n`;
     if (type === 'Delivery') {
-        text += `*Alamat:* ${address ? address : '-'}\n\n`;
+        text += `*Alamat:* ${address}\n`;
     }
+    if (note) text += `*Catatan:* ${note}\n`;
+    text += `\n`;
     text += `Mohon konfirmasi pesanan ini. Terima kasih!`;
 
     window.open(`https://wa.me/${NOMOR_WA_UMKM}?text=${encodeURIComponent(text)}`, '_blank');
