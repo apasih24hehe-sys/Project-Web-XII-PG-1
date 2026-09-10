@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dapur UMKM - Menu & Pesan Online</title>
+    <title>Penagisa Food Corner - Menu & Pesan Online</title>
     <script>
         if (localStorage.getItem('umkm_theme') === 'dark') {
             document.documentElement.dataset.theme = 'dark';
@@ -21,7 +21,7 @@
     <div id="gateScreen" class="gate-screen">
         <div class="gate-card">
             <div class="gate-badge">Selamat Datang</div>
-            <h1>Dapur UMKM</h1>
+            <h1>Penagisa Food Corner</h1>
             <p class="gate-text">
                 Nikmati sajian masakan dan minuman lokal dengan cita rasa hangat, cepat, dan siap diantar ke rumah atau diambil langsung.
             </p>
@@ -38,8 +38,9 @@
 
     <header>
         <div class="nav-container">
-            <a href="index.html" class="logo"><i class="fa-solid fa-utensils"></i> Dapur UMKM</a>
+            <a href="index.html" class="logo"><i class="fa-solid fa-utensils"></i> Penagisa Food Corner</a>
             <nav class="nav-menu">
+                <span class="nav-indicator" aria-hidden="true"></span>
                 <a href="index.html" class="nav-link active">Menu</a>
                 <a href="info.html" class="nav-link">Info</a>
                 <a href="alamat.html" class="nav-link">Lokasi</a>
@@ -92,14 +93,13 @@
                 <div class="form-group">
                     <label>OPSI PESANAN</label>
                     <select id="orderType">
-                        <option value="Delivery / Antar ke Rumah">Delivery / Antar ke Rumah</option>
-                        <option value="Takeaway / Ambil Sendiri">Takeaway / Ambil Sendiri</option>
-                        <option value="Makan di Tempat (Dine-in)">Makan di Tempat (Dine-in)</option>
+                        <option value="Delivery">Delivery / Antar ke Rumah</option>
+                        <option value="Takeaway">Takeaway / Ambil Sendiri</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>ALAMAT LENGKAP / NOMOR MEJA</label>
-                    <textarea id="custAddress" rows="2" placeholder="Isi alamat rumah atau no. meja Anda"></textarea>
+                <div class="form-group" id="addressGroup">
+                    <label id="addressLabel">ALAMAT LENGKAP</label>
+                    <textarea id="custAddress" rows="2" placeholder="Isi alamat rumah Anda"></textarea>
                 </div>
             </div>
 
@@ -149,7 +149,7 @@
             <div class="footer-brand">
                 <div class="footer-logo"><i class="fa-solid fa-utensils"></i></div>
                 <div>
-                    <h3>Dapur UMKM</h3>
+                    <h3>Penagisa Food Corner</h3>
                     <p>Menu sehat, nikmat, dan siap dipesan.</p>
                 </div>
             </div>
@@ -161,7 +161,7 @@
         </div>
 
         <div class="footer-bottom">
-            <p>© 2026 Dapur UMKM • Copyright by "XII PG 1"</p>
+            <p>© 2026 Penagisa Food Corner • Copyright by "XII PG 1"</p>
         </div>
     </footer>
 </body>

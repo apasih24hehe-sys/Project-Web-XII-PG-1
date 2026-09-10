@@ -11,14 +11,16 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header>
         <div class="nav-container">
-            <a href="index.html" class="logo"><i class="fa-solid fa-utensils"></i> Dapur UMKM</a>
+            <a href="index.html" class="logo"><i class="fa-solid fa-utensils"></i> Penagisa Food Corner</a>
             <nav class="nav-menu">
+                <span class="nav-indicator" aria-hidden="true"></span>
                 <a href="index.html" class="nav-link">Menu</a>
                 <a href="info.html" class="nav-link">Info</a>
                 <a href="alamat.html" class="nav-link">Lokasi</a>
@@ -41,7 +43,7 @@
                 
                 <a href="https://wa.me/6282223346091" target="_blank" class="contact-card-btn">   <!-- Ganti nomor WA DISINI BOS -->
                     <div style="display:flex; align-items:center; gap:12px;">
-                        <div class="contact-icon" style="background:#25D366;"><i class="fa-brands fa-whatsapp"></i></div>
+                        <div class="contact-icon" style="background:var(--primary);"><i class="fa-brands fa-whatsapp"></i></div>
                         <div>
                             <div style="font-weight:700; font-size:14px;">WhatsApp Customer Service</div>
                             <div style="font-size:12px; color:var(--text-muted);">0858-8903-3107</div>
@@ -52,7 +54,7 @@
 
                 <a href="mailto:dapurumkm.official@gmail.com" class="contact-card-btn">
                     <div style="display:flex; align-items:center; gap:12px;">
-                        <div class="contact-icon" style="background:#ff4757;"><i class="fa-solid fa-envelope"></i></div>
+                        <div class="contact-icon" style="background:var(--primary);"><i class="fa-solid fa-envelope"></i></div>
                         <div>
                             <div style="font-weight:700; font-size:14px;">Email Resmi</div>
                             <div style="font-size:12px; color:var(--text-muted);">dapurumkm.official@gmail.com</div>
@@ -63,7 +65,7 @@
 
                 <a href="https://www.instagram.com/twelvegim.development?utm_source=ig_web_button_share_sheet&stkn=ZDNlZDc0MzIxNw==" target="_blank" class="contact-card-btn">
                     <div style="display:flex; align-items:center; gap:12px;">
-                        <div class="contact-icon" style="background:#E1306C;"><i class="fa-brands fa-instagram"></i></div>
+                        <div class="contact-icon" style="background:var(--primary);"><i class="fa-brands fa-instagram"></i></div>
                         <div>
                             <div style="font-weight:700; font-size:14px;">Instagram</div>
                             <div style="font-size:12px; color:var(--text-muted);">@twelvegim.development</div>
@@ -71,6 +73,21 @@
                     </div>
                     <i class="fa-solid fa-arrow-right-long" style="color:var(--text-muted);"></i>
                 </a>
+
+                <div class="share-website-card">
+                    <div class="share-website-heading">
+                        <div class="contact-icon"><i class="fa-solid fa-qrcode"></i></div>
+                        <div>
+                            <h3>Bagikan Website</h3>
+                            <p>Scan QR untuk membuka menu online kami.</p>
+                        </div>
+                    </div>
+                    <div class="website-qr" id="websiteQr" aria-label="QR code link website"></div>
+                    <button class="copy-link-btn" type="button" onclick="copyWebsiteLink()">
+                        <i class="fa-solid fa-copy"></i> Salin Link Website
+                    </button>
+                    <span class="copy-link-status" id="copyLinkStatus" role="status"></span>
+                </div>
             </div>
 
             <!-- Form Pesan Singkat -->
@@ -131,12 +148,12 @@
                 <div class="form-group">
                     <label>OPSI PESANAN</label>
                     <select id="orderType">
-                        <option value="Delivery / Antar ke Rumah">Delivery / Antar ke Rumah</option>
-                        <option value="Takeaway / Ambil Sendiri">Takeaway / Ambil Sendiri</option>
+                        <option value="Delivery">Delivery / Antar ke Rumah</option>
+                        <option value="Takeaway">Takeaway / Ambil Sendiri</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>ALAMAT LENGKAP / NOMOR MEJA</label>
+                <div class="form-group" id="addressGroup">
+                    <label id="addressLabel">ALAMAT LENGKAP</label>
                     <textarea id="custAddress" rows="2" placeholder="Isi alamat rumah Anda"></textarea>
                 </div>
             </div>
@@ -149,7 +166,7 @@
             <div class="footer-brand">
                 <div class="footer-logo"><i class="fa-solid fa-utensils"></i></div>
                 <div>
-                    <h3>Dapur UMKM</h3>
+                    <h3>Penagisa Food Corner</h3>
                     <p>Menu sehat, nikmat, dan siap dipesan.</p>
                 </div>
             </div>
@@ -161,7 +178,7 @@
         </div>
 
         <div class="footer-bottom">
-            <p>© 2026 Dapur UMKM • Copyright by "XII PG 1"</p>
+            <p>© 2026 Penagisa Food Corner • Copyright by "XII PG 1"</p>
         </div>
     </footer>
 

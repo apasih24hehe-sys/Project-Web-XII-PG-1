@@ -20,6 +20,25 @@ function toggleTheme() {
     applyTheme(nextTheme);
 }
 
+function getWebsiteLink() {
+    const url = new URL(window.location.href);
+    url.hash = '';
+    url.search = '';
+    url.pathname = url.pathname.replace(/kontak\.html$/, 'index.html');
+    return url.toString();
+}
+
+function copyWebsiteLink() {
+    const status = document.getElementById('copyLinkStatus');
+    const link = getWebsiteLink();
+
+    navigator.clipboard.writeText(link).then(() => {
+        if (status) status.textContent = 'Link berhasil disalin.';
+    }).catch(() => {
+        if (status) status.textContent = 'Link: ' + link;
+    });
+}
+
 function continueToMenu() {
     localStorage.setItem(GATE_KEY, '1');
     const gate = document.getElementById('gateScreen');
@@ -31,13 +50,13 @@ function continueToMenu() {
 const menuItems = [
     {
         id: 1,
-        name: "Ayam Geprek Sambal Korek",
-        category: "makanan",
-        price: 18000,
-        shortDesc: "Ayam goreng krispi digeprek pedas gurih.",
-        desc: "Ayam geprek dengan sambal korek yang pedas, gurih, dan bikin nagih. Cocok untuk pecinta rasa pedas yang tidak bikin enek.",
-        ingredients: ["Ayam fillet segar", "Bumbu rempah pilihan", "Cabai rawit pedas", "Minyak goreng premium"],
-        highlight: "Rasa gurih, pedas, dan tekstur ayam renyah di luar lembut di dalam.",
+        name: "Cappucino Cincau",
+        category: "minuman",
+        price: 5000,
+        shortDesc: "Kopi cappucino dengan rasa cincau yang lezat.",
+        desc: "Minuman kopi cappucino yang diberi sentuhan rasa cincau yang khas, cocok untuk menikmati hari-hari yang cerah.",
+        ingredients: ["Bubuk Cappucino pilihan", "Cincau", "Gula", "Es batu"],
+        highlight: "Rasa manis, segar dan kenyal dari cincau yang membuat perpaduannya istimewa.",
         images: [
             "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=900&q=80",
             "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=900&q=80",
@@ -46,12 +65,12 @@ const menuItems = [
     },
     {
         id: 2,
-        name: "Nasi Goreng Spesial Telur",
+        name: "Gyoza Kuah",
         category: "makanan",
-        price: 20000,
-        shortDesc: "Nasi goreng bumbu rempah dan telur ceplok.",
-        desc: "Nasi goreng spesial dengan aroma rempah yang kuat, telur ceplok, dan rasa yang cocok untuk santapan utama.",
-        ingredients: ["Nasi pulen", "Telur ceplok", "Bumbu nasi goreng khas", "Sayuran segar"],
+        price: 5000,
+        shortDesc: "Gyoza dengan kuah sup yang lezat.",
+        desc: "Gyoza yang digoreng dan disajikan dengan kuah sup yang lezat, cocok untuk santapan utama.",
+        ingredients: ["Daging cincang", "Sayuran", "Bumbu kuah"],
         highlight: "Berserat lezat, cocok untuk makan siang atau malam dengan porsi yang mengenyangkan.",
         images: [
             "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=900&q=80",
@@ -61,9 +80,25 @@ const menuItems = [
     },
     {
         id: 3,
-        name: "Kopi Kenangan Mantan",
-        category: "minuman",
-        price: 12000,
+        name: "Cilok Lava",
+        category: "makanan",
+        price: 5000,
+        shortDesc: "Es kopi susu gula aren asli gurih renyah.",
+        desc: "Minuman kopi susu dengan sentuhan gula aren yang manis, creamy, dan bikin mood makin nikmat untuk menemani hari.",
+        ingredients: ["Kopi bubuk pilihan", "Susu cair", "Gula aren", "Es batu"],
+        highlight: "Rasa creamy dengan aroma kopi yang lembut, cocok untuk dinikmati kapan saja.",
+        images: [
+            "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80"
+        ]
+    },
+
+    {
+        id: 4,
+        name: "Cilok Clasik",
+        category: "makanan",
+        price: 5000,
         shortDesc: "Es kopi susu gula aren asli gurih renyah.",
         desc: "Minuman kopi susu dengan sentuhan gula aren yang manis, creamy, dan bikin mood makin nikmat untuk menemani hari.",
         ingredients: ["Kopi bubuk pilihan", "Susu cair", "Gula aren", "Es batu"],
@@ -148,15 +183,27 @@ function openProductModal(itemId) {
 
     let currentIndex = 0;
     const gallery = item.images;
+    const imageCache = gallery.map((src) => {
+        const image = new Image();
+        image.src = src;
+        return image;
+    });
 
     const renderSlides = () => {
         const img = modal.querySelector('.product-main-image');
         const dots = modal.querySelectorAll('.dot');
+        const requestedIndex = currentIndex;
+        const applyImage = () => {
+            if (!img || requestedIndex !== currentIndex) return;
+            img.src = gallery[requestedIndex];
+        };
+
         if (img) {
-            img.classList.remove('swipe-anim');
-            void img.offsetWidth;
-            img.src = gallery[currentIndex];
-            img.classList.add('swipe-anim');
+            if (imageCache[requestedIndex].complete && imageCache[requestedIndex].naturalWidth > 0) {
+                applyImage();
+            } else {
+                imageCache[requestedIndex].addEventListener('load', applyImage, { once: true });
+            }
         }
         dots.forEach((dot, idx) => {
             dot.classList.toggle('active', idx === currentIndex);
@@ -201,12 +248,18 @@ function openProductModal(itemId) {
     };
 
     renderSlides();
+    modal.classList.remove('is-closing');
     modal.classList.add('active');
 }
 
 function closeProductModal() {
     const modal = document.getElementById('productModal');
-    if (modal) modal.classList.remove('active');
+    if (!modal || !modal.classList.contains('active')) return;
+
+    modal.classList.add('is-closing');
+    setTimeout(() => {
+        modal.classList.remove('active', 'is-closing');
+    }, 200);
 }
 
 // PERBAHARUI TAMPILAN KERANJANG
@@ -327,18 +380,71 @@ function closeCartModal() {
     if (modal) modal.classList.remove("active");
 }
 
+function updateOrderTypeFields() {
+    const orderType = document.getElementById("orderType");
+    const addressGroup = document.getElementById("addressGroup");
+    const addressLabel = document.getElementById("addressLabel");
+    const custAddress = document.getElementById("custAddress");
+
+    if (!orderType || !addressGroup) return;
+
+    const isDelivery = orderType.value === "Delivery";
+    addressGroup.style.display = isDelivery ? "block" : "none";
+
+    if (addressLabel) {
+        addressLabel.textContent = "ALAMAT LENGKAP";
+    }
+
+    if (custAddress) {
+        custAddress.placeholder = isDelivery ? "Isi alamat rumah Anda" : "";
+    }
+}
+
+// Tampilkan popup inline animasi untuk pesan singkat
+function showInlineAlert(message, duration = 3000) {
+    // Jika sudah ada alert aktif, reset teks dan timer
+    let existing = document.querySelector('.inline-alert');
+    if (existing) {
+        existing.classList.remove('hide');
+        existing.querySelector('span').textContent = message;
+        if (existing._hideTimer) clearTimeout(existing._hideTimer);
+        existing._hideTimer = setTimeout(() => {
+            existing.classList.add('hide');
+                existing._removeTimer = setTimeout(() => existing.remove(), 220);
+        }, duration);
+        return;
+    }
+
+    const el = document.createElement('div');
+    el.className = 'inline-alert';
+        el.innerHTML = `<strong>Nama belum diisi</strong><span>${message}</span>`;
+        el.setAttribute('role', 'alertdialog');
+        el.setAttribute('aria-label', 'Peringatan nama belum diisi');
+        el.addEventListener('click', () => {
+            el.classList.add('hide');
+            setTimeout(() => el.remove(), 220);
+        });
+    document.body.appendChild(el);
+
+    el._hideTimer = setTimeout(() => {
+        el.classList.add('hide');
+        el._removeTimer = setTimeout(() => el.remove(), 300);
+    }, duration);
+}
+
 // KIRIM KE WHATSAPP
 function sendOrderToWhatsApp() {
     const name = document.getElementById("custName").value.trim();
     const type = document.getElementById("orderType").value;
-    const address = document.getElementById("custAddress").value.trim();
+    const addressInput = document.getElementById("custAddress");
+    const address = addressInput ? addressInput.value.trim() : "";
 
     if (!name) {
-        alert("Harap masukkan nama Anda.");
+        showInlineAlert("Harap masukkan nama Anda.");
         return;
     }
 
-    let text = `*PESANAN BARU - DAPUR UMKM* 🍽️\n\n`;
+    let text = `*PESANAN BARU - Penagisa Food Corner* 🍽️\n\n`;
     text += `*Rincian Pesanan:*\n`;
 
     let total = 0;
@@ -353,11 +459,53 @@ function sendOrderToWhatsApp() {
     text += `\n*Total:* Rp ${total.toLocaleString('id-ID')}\n`;
     text += `----------------------------------\n`;
     text += `*Nama:* ${name}\n`;
-    text += `*Opsi Pesanan:* ${type}\n`;
-    text += `*Alamat / No. Meja:* ${address ? address : '-'}\n\n`;
+    const typeLabel = type === 'Delivery' ? 'Delivery / Antar ke Rumah' : 'Takeaway / Ambil Sendiri';
+    text += `*Opsi Pesanan:* ${typeLabel}\n`;
+    if (type === 'Delivery') {
+        text += `*Alamat:* ${address ? address : '-'}\n\n`;
+    }
     text += `Mohon konfirmasi pesanan ini. Terima kasih!`;
 
     window.open(`https://wa.me/${NOMOR_WA_UMKM}?text=${encodeURIComponent(text)}`, '_blank');
+}
+
+// BUKA PETUNJUK ARAH DI GOOGLE MAPS DARI LOKASI PENGGUNA
+function openDirectionsTo(destLat, destLng) {
+    if (!destLat || !destLng) return;
+
+    // Jika browser tidak mendukung Geolocation, buka saja tujuan
+    if (!navigator.geolocation) {
+        const url = `https://www.google.com/maps/dir/?api=1&destination=${destLat},${destLng}&travelmode=driving`;
+        window.open(url, '_blank');
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition((pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const url = `https://www.google.com/maps/dir/?api=1&origin=${lat},${lng}&destination=${destLat},${destLng}&travelmode=driving`;
+        window.open(url, '_blank');
+    }, (err) => {
+        // Jika gagal mengambil lokasi, buka petunjuk arah ke tujuan saja
+        const url = `https://www.google.com/maps/dir/?api=1&destination=${destLat},${destLng}&travelmode=driving`;
+        alert('Tidak dapat mengambil lokasi Anda. Membuka petunjuk arah di Google Maps.');
+        window.open(url, '_blank');
+    }, { enableHighAccuracy: true, timeout: 10000 });
+}
+
+// BUKA PETUNJUK ARAH MENGGUNAKAN ALAMAT YANG DIINPUT PENGGUNA ATAU GEOLOCATION
+function openDirectionsFromInput(destLat, destLng) {
+    const input = document.getElementById('originAddressInput');
+    const originAddr = input ? input.value.trim() : '';
+
+    if (originAddr) {
+        const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originAddr)}&destination=${destLat},${destLng}&travelmode=driving`;
+        window.open(url, '_blank');
+        return;
+    }
+
+    // Jika tidak ada alamat input, coba gunakan geolocation (fallback ke tujuan saja jika gagal)
+    openDirectionsTo(destLat, destLng);
 }
 
 // RUN SAAT LOKASI KATEGORI/SEARCH
@@ -372,6 +520,48 @@ function filterCategory(cat, btn) {
 document.addEventListener("DOMContentLoaded", () => {
     applyTheme(localStorage.getItem(THEME_KEY) || 'light');
 
+    const websiteQr = document.getElementById('websiteQr');
+    if (websiteQr && typeof QRCode !== 'undefined') {
+        new QRCode(websiteQr, {
+            text: getWebsiteLink(),
+            width: 144,
+            height: 144,
+            colorDark: '#1e272e',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+        });
+    }
+
+    const activeLink = document.querySelector('.nav-link.active');
+    const navIndicator = document.querySelector('.nav-indicator');
+    if (activeLink && navIndicator) {
+        const navLinks = [...document.querySelectorAll('.nav-link')];
+        const previousHref = sessionStorage.getItem('umkm_previous_nav');
+        const previousLink = navLinks.find(link => link.getAttribute('href') === previousHref);
+
+        navIndicator.classList.add('prepare');
+        navIndicator.style.left = `${activeLink.offsetLeft}px`;
+        navIndicator.style.width = `${activeLink.offsetWidth}px`;
+        if (previousLink && previousLink !== activeLink) {
+            navIndicator.style.left = `${previousLink.offsetLeft}px`;
+        }
+        void navIndicator.offsetWidth;
+        navIndicator.classList.remove('prepare');
+        navIndicator.classList.add('is-ready');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                sessionStorage.setItem('umkm_previous_nav', activeLink.getAttribute('href'));
+            });
+        });
+
+        if (previousLink && previousLink !== activeLink) {
+            requestAnimationFrame(() => {
+                navIndicator.style.left = `${activeLink.offsetLeft}px`;
+            });
+        }
+    }
+
     const gate = document.getElementById('gateScreen');
     const hasSeenGate = localStorage.getItem(GATE_KEY) === '1';
 
@@ -385,6 +575,29 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    const orderType = document.getElementById('orderType');
+    if (orderType) {
+        orderType.addEventListener('change', updateOrderTypeFields);
+        updateOrderTypeFields();
+    }
+
     renderMenu(menuItems);
     updateCartUI();
+    // Setup orderType visibility handling (show address only for Delivery)
+    const orderSelect = document.getElementById('orderType');
+    const addressGroup = document.getElementById('addressGroup');
+    const addressLabel = document.getElementById('addressLabel');
+    function updateAddressVisibility() {
+        if (!orderSelect || !addressGroup) return;
+        if (orderSelect.value === 'Delivery') {
+            addressGroup.style.display = '';
+            if (addressLabel) addressLabel.textContent = 'ALAMAT LENGKAP';
+        } else {
+            addressGroup.style.display = 'none';
+        }
+    }
+    if (orderSelect) {
+        orderSelect.addEventListener('change', updateAddressVisibility);
+        updateAddressVisibility();
+    }
 });
