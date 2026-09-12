@@ -2748,7 +2748,7 @@ header {
 @media (max-width: 599px) {
     body {
         padding-top: 104px;
-        padding-bottom: calc(124px + env(safe-area-inset-bottom));
+        padding-bottom: env(safe-area-inset-bottom);
     }
 
     header {
@@ -2822,6 +2822,7 @@ header {
     .floating-cart {
         width: min(430px, calc(100% - 20px));
         left: 50%;
+        bottom: calc(16px + env(safe-area-inset-bottom));
         padding: 10px;
         gap: 8px;
         border-radius: 16px;
@@ -2840,6 +2841,10 @@ header {
     .view-cart-btn {
         min-height: 40px;
         padding-inline: 12px;
+    }
+
+    .cart-add-notification {
+        bottom: calc(88px + env(safe-area-inset-bottom));
     }
 
     .modal-overlay {
