@@ -1,6 +1,5 @@
 // Ganti nomor WhatsApp UMKM di sini (gunakan format 62)
 const NOMOR_WA_UMKM = "6282223346091";
-const GATE_KEY = "umkm_gate_seen";
 const THEME_KEY = "umkm_theme";
 const DEFAULT_REVIEWS = [
     {
@@ -66,7 +65,6 @@ function copyWebsiteLink() {
 }
 
 function continueToMenu() {
-    localStorage.setItem(GATE_KEY, '1');
     const gate = document.getElementById('gateScreen');
     if (gate) gate.classList.add('is-hidden');
     document.body.classList.remove('gate-open');
@@ -74,7 +72,6 @@ function continueToMenu() {
 }
 
 function startMenuIntro(gate) {
-    localStorage.setItem(GATE_KEY, '1');
     window.setTimeout(() => {
         gate.classList.add('is-hidden');
         document.body.classList.remove('gate-open');
@@ -815,18 +812,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const gate = document.getElementById('gateScreen');
-    const hasSeenGate = localStorage.getItem(GATE_KEY) === '1';
 
     if (gate) {
-        if (hasSeenGate) {
-            gate.classList.add('is-hidden');
-            document.body.classList.remove('gate-open');
-            document.body.classList.add('gate-ready');
-        } else {
-            gate.classList.remove('is-hidden');
-            document.body.classList.add('gate-open');
-            startMenuIntro(gate);
-        }
+        gate.classList.remove('is-hidden');
+        document.body.classList.add('gate-open');
+        startMenuIntro(gate);
     }
 
     const orderType = document.getElementById('orderType');
@@ -858,8 +848,8 @@ document.addEventListener("DOMContentLoaded", () => {
         closeProductModal();
     });
     updateCartUI();
-    if (Object.keys(cart).length > 0) refreshCartActivity();
     updateFloatingCartPosition();
+    if (Object.keys(cart).length > 0) refreshCartActivity();
     window.addEventListener('scroll', scheduleFloatingCartPosition, { passive: true });
     window.addEventListener('resize', scheduleFloatingCartPosition);
     // Setup orderType visibility handling (show address only for Delivery)
