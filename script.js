@@ -153,86 +153,54 @@ const menuItems = [
 
 // Ambil Keranjang dari localStorage agar tidak hilang saat pindah halaman
 let cart = JSON.parse(localStorage.getItem('umkm_cart')) || {};
-let cartMinimizeTimer;
+let cartDimTimer;
+let cartPositionFrame;
 
-function setCartMinimized(shouldMinimize) {
-    const floatingBar = document.getElementById('floatingCart');
-    if (!floatingBar || floatingBar.classList.contains('minimized') === shouldMinimize) return;
-
-    if (floatingBar._cartAnimation) floatingBar._cartAnimation.cancel();
-    floatingBar.classList.add('cart-motion');
-    const fadeOut = floatingBar.animate([
-        { opacity: 1, transform: 'scale(1)' },
-        { opacity: 0, transform: 'scale(0.92)' }
-    ], {
-        duration: 220,
-        easing: 'ease-in',
-        fill: 'both'
-    });
-
-    floatingBar._cartAnimation = fadeOut;
-    fadeOut.onfinish = () => {
-        floatingBar.style.opacity = '0';
-        floatingBar.style.transform = 'scale(0.92)';
-        fadeOut.cancel();
-        floatingBar.classList.toggle('minimized', shouldMinimize);
-
-        if (shouldMinimize) {
-            floatingBar.style.transform = '';
-            floatingBar.style.opacity = '';
-            const icon = floatingBar.querySelector('.cart-minimize-btn');
-            const iconAnimation = icon ? icon.animate([
-                { opacity: 0, transform: 'scale(0.7)' },
-                { opacity: 1, transform: 'scale(1)' }
-            ], {
-                duration: 220,
-                easing: 'cubic-bezier(.2, .8, .2, 1)',
-                fill: 'both'
-            }) : null;
-
-            floatingBar._cartAnimation = iconAnimation;
-            if (!iconAnimation) {
-                floatingBar._cartAnimation = null;
-                floatingBar.classList.remove('cart-motion');
-            } else {
-                iconAnimation.onfinish = () => {
-                    iconAnimation.cancel();
-                    floatingBar._cartAnimation = null;
-                    floatingBar.classList.remove('cart-motion');
-                };
-            }
-            return;
-        }
-
-        const fadeIn = floatingBar.animate([
-            { opacity: 0, transform: 'scale(0.92)' },
-            { opacity: 1, transform: 'scale(1)' }
-        ], {
-            duration: 280,
-            easing: 'cubic-bezier(.2, .8, .2, 1)',
-            fill: 'both'
-        });
-
-        floatingBar._cartAnimation = fadeIn;
-        fadeIn.onfinish = () => {
-            fadeIn.cancel();
-            floatingBar.style.opacity = '';
-            floatingBar.style.transform = '';
-            floatingBar._cartAnimation = null;
-            floatingBar.classList.remove('cart-motion');
-        };
-    };
-}
-
-function expandCartSummary() {
+function updateFloatingCartPosition() {
     const floatingBar = document.getElementById('floatingCart');
     if (!floatingBar) return;
 
-    setCartMinimized(false);
-    clearTimeout(cartMinimizeTimer);
-    cartMinimizeTimer = setTimeout(() => {
-        if (Object.keys(cart).length > 0) setCartMinimized(true);
-    }, 4500);
+    const pageBottom = window.scrollY + window.innerHeight;
+    const documentBottom = document.documentElement.scrollHeight;
+    const isFooterSafe = pageBottom >= documentBottom - 24;
+    const safeTop = window.matchMedia('(max-width: 599px)').matches ? 112 : 76;
+    const safeBottom = Math.max(12, window.innerHeight - safeTop - floatingBar.offsetHeight);
+
+    floatingBar.style.setProperty('--cart-safe-bottom', `${safeBottom}px`);
+    floatingBar.classList.toggle('is-footer-safe', isFooterSafe);
+}
+
+function scheduleFloatingCartPosition() {
+    if (cartPositionFrame) return;
+
+    cartPositionFrame = requestAnimationFrame(() => {
+        cartPositionFrame = null;
+        updateFloatingCartPosition();
+    });
+}
+
+function refreshCartActivity() {
+    const floatingBar = document.getElementById('floatingCart');
+    if (!floatingBar) return;
+
+    clearTimeout(cartDimTimer);
+    floatingBar.classList.remove('is-dimmed');
+    cartDimTimer = setTimeout(() => {
+        if (Object.keys(cart).length > 0) floatingBar.classList.add('is-dimmed');
+    }, 3000);
+}
+
+function handleCartSummaryClick(event) {
+    const floatingBar = document.getElementById('floatingCart');
+    if (!floatingBar || Object.keys(cart).length === 0) return;
+
+    event.preventDefault();
+    if (floatingBar.classList.contains('is-dimmed')) {
+        refreshCartActivity();
+        return;
+    }
+
+    toggleCartModal();
 }
 
 // FUNGSI RENDER MENU (Khusus index.html)
@@ -295,7 +263,7 @@ function addToCart(id) {
 
     cart[id] = (cart[id] || 0) + 1;
     saveAndRefreshCart();
-    expandCartSummary();
+    refreshCartActivity();
     showCartAddNotification(item.name, cart[id]);
 }
 
@@ -329,7 +297,6 @@ function clearCart() {
     if (Object.keys(cart).length === 0) return;
     cart = {};
     saveAndRefreshCart();
-    closeCartModal();
 }
 
 function saveAndRefreshCart() {
@@ -412,6 +379,7 @@ function openProductModal(itemId) {
     renderSlides();
     modal.classList.remove('is-closing');
     modal.classList.add('active');
+    document.body.classList.add('review-popup-open');
 }
 
 function closeProductModal() {
@@ -419,6 +387,7 @@ function closeProductModal() {
     if (!modal || !modal.classList.contains('active')) return;
 
     modal.classList.add('is-closing');
+    document.body.classList.remove('review-popup-open');
     setTimeout(() => {
         modal.classList.remove('active', 'is-closing');
     }, 200);
@@ -537,16 +506,6 @@ function closeReviewThankYou() {
 // PERBAHARUI TAMPILAN KERANJANG
 // PERBARUAN FUNGSI KERANJANG & ARAHAN PEMESANAN
 
-function toggleCartModal() {
-    const modal = document.getElementById("cartModal");
-    if (modal) modal.classList.toggle("active");
-}
-
-function closeCartModal() {
-    const modal = document.getElementById("cartModal");
-    if (modal) modal.classList.remove("active");
-}
-
 // FUNGSI MENGARAHKAN PENGGUNA KE MENU
 function goToMenu() {
     closeCartModal();
@@ -641,20 +600,26 @@ function updateCartUI() {
             floatingBar.classList.remove("hidden");
         } else {
             floatingBar.classList.add("hidden");
-            setCartMinimized(false);
-            clearTimeout(cartMinimizeTimer);
+            floatingBar.classList.remove("is-dimmed");
+            clearTimeout(cartDimTimer);
         }
     }
 }
 
 function toggleCartModal() {
     const modal = document.getElementById("cartModal");
-    if (modal && Object.keys(cart).length > 0) modal.classList.toggle("active");
+    if (!modal || Object.keys(cart).length === 0) return;
+
+    const isActive = modal.classList.toggle("active");
+    document.body.classList.toggle('review-popup-open', isActive);
 }
 
 function closeCartModal() {
     const modal = document.getElementById("cartModal");
     if (modal) modal.classList.remove("active");
+    if (!document.getElementById('productModal')?.classList.contains('active')) {
+        document.body.classList.remove('review-popup-open');
+    }
 }
 
 function updateOrderTypeFields() {
@@ -876,11 +841,27 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll('[data-close-review-thank-you]').forEach((button) => {
         button.addEventListener('click', closeReviewThankYou);
     });
+    const cartModal = document.getElementById('cartModal');
+    if (cartModal) {
+        cartModal.addEventListener('click', (event) => {
+            if (event.target === cartModal) closeCartModal();
+        });
+    }
+    const floatingCart = document.getElementById('floatingCart');
+    if (floatingCart) {
+        floatingCart.addEventListener('click', handleCartSummaryClick);
+    }
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') closeReviewThankYou();
+        if (event.key !== 'Escape') return;
+        closeReviewThankYou();
+        closeCartModal();
+        closeProductModal();
     });
     updateCartUI();
-    if (Object.keys(cart).length > 0) expandCartSummary();
+    if (Object.keys(cart).length > 0) refreshCartActivity();
+    updateFloatingCartPosition();
+    window.addEventListener('scroll', scheduleFloatingCartPosition, { passive: true });
+    window.addEventListener('resize', scheduleFloatingCartPosition);
     // Setup orderType visibility handling (show address only for Delivery)
     const orderSelect = document.getElementById('orderType');
     const addressGroup = document.getElementById('addressGroup');
