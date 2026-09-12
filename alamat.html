@@ -17,12 +17,13 @@
 
     <header>
         <div class="nav-container">
-            <a href="index.html" class="logo"><i class="fa-solid fa-utensils"></i> Penagisa Food Corner</a>
+            <a href="index.html" class="logo"><img class="brand-logo" src="https://files.catbox.moe/qk265j.png" alt="Logo Penagisa Food Corner"> Penagisa Food Corner</a>
             <nav class="nav-menu">
                 <span class="nav-indicator" aria-hidden="true"></span>
                 <a href="index.html" class="nav-link">Menu</a>
                 <a href="info.html" class="nav-link">Info</a>
                 <a href="alamat.html" class="nav-link active">Lokasi</a>
+                <a href="review.html" class="nav-link">Review</a>
                 <a href="kontak.html" class="nav-link">Kontak</a>
             </nav>
             <button class="theme-toggle" onclick="toggleTheme()" aria-label="Aktifkan mode gelap" title="Ganti tema">
@@ -50,6 +51,9 @@
                             <div class="contact-icon" style="background:#2ecc71;"><i class="fa-solid fa-paper-plane"></i></div>
                             <div>
                                 <div style="font-weight:700; font-size:13px;">Rute dari Alamat Saya</div>
+                            <button class="cart-minimize-btn" onclick="expandCartSummary();" aria-label="Tampilkan keranjang" title="Tampilkan keranjang">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                            </button>
                                 <div style="font-size:11px; color:var(--text-muted);">Gunakan alamat yang Anda masukkan</div>
                             </div>
                         </div>
@@ -136,7 +140,7 @@
     <footer class="site-footer">
         <div class="footer-inner">
             <div class="footer-brand">
-                <div class="footer-logo"><i class="fa-solid fa-utensils"></i></div>
+                <div class="footer-logo"><img class="brand-logo" src="https://files.catbox.moe/qk265j.png" alt="Logo Penagisa Food Corner"></div>
                 <div>
                     <h3>Penagisa Food Corner</h3>
                     <p>Menu sehat, nikmat, dan siap dipesan.</p>

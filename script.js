@@ -2,6 +2,32 @@
 const NOMOR_WA_UMKM = "6282223346091";
 const GATE_KEY = "umkm_gate_seen";
 const THEME_KEY = "umkm_theme";
+const DEFAULT_REVIEWS = [
+    {
+        name: "Ipul",
+        food: "Gyoza Kuah",
+        rating: 5,
+        message: "Kuahnya gurih, gyozanya lembut, dan porsinya pas untuk makan siang."
+    },
+    {
+        name: "Fathan",
+        food: "Cilok Lava",
+        rating: 5,
+        message: "Saus lavanya pedas dan nagih. Tekstur ciloknya juga kenyal."
+    },
+    {
+        name: "Galih",
+        food: "Cappucino Cincau",
+        rating: 4,
+        message: "Minumannya segar dan cincaunya banyak. Cocok diminum siang hari."
+    },
+    {
+        name: "Titto",
+        food: "Cilok Clasik",
+        rating: 5,
+        message: "Rasanya sederhana tapi enak, apalagi dimakan selagi hangat."
+    }
+];
 
 function applyTheme(theme) {
     const isDark = theme === 'dark';
@@ -44,6 +70,16 @@ function continueToMenu() {
     const gate = document.getElementById('gateScreen');
     if (gate) gate.classList.add('is-hidden');
     document.body.classList.remove('gate-open');
+    document.body.classList.add('gate-ready');
+}
+
+function startMenuIntro(gate) {
+    localStorage.setItem(GATE_KEY, '1');
+    window.setTimeout(() => {
+        gate.classList.add('is-hidden');
+        document.body.classList.remove('gate-open');
+        document.body.classList.add('gate-ready');
+    }, 2800);
 }
 
 // DATA MENU (hanya 3 item)
@@ -53,6 +89,7 @@ const menuItems = [
         name: "Cappucino Cincau",
         category: "minuman",
         price: 5000,
+        rating: 4.8,
         shortDesc: "Kopi cappucino dengan rasa cincau yang lezat.",
         desc: "Minuman kopi cappucino yang diberi sentuhan rasa cincau yang khas, cocok untuk menikmati hari-hari yang cerah.",
         ingredients: ["Bubuk Cappucino pilihan", "Cincau", "Gula", "Es batu"],
@@ -68,6 +105,7 @@ const menuItems = [
         name: "Gyoza Kuah",
         category: "makanan",
         price: 5000,
+        rating: 4.9,
         shortDesc: "Gyoza dengan kuah sup yang lezat.",
         desc: "Gyoza yang digoreng dan disajikan dengan kuah sup yang lezat, cocok untuk santapan utama.",
         ingredients: ["Daging cincang", "Sayuran", "Bumbu kuah"],
@@ -83,6 +121,7 @@ const menuItems = [
         name: "Cilok Lava",
         category: "makanan",
         price: 5000,
+        rating: 4.7,
         shortDesc: "Es kopi susu gula aren asli gurih renyah.",
         desc: "Minuman kopi susu dengan sentuhan gula aren yang manis, creamy, dan bikin mood makin nikmat untuk menemani hari.",
         ingredients: ["Kopi bubuk pilihan", "Susu cair", "Gula aren", "Es batu"],
@@ -99,6 +138,7 @@ const menuItems = [
         name: "Cilok Clasik",
         category: "makanan",
         price: 5000,
+        rating: 4.8,
         shortDesc: "Es kopi susu gula aren asli gurih renyah.",
         desc: "Minuman kopi susu dengan sentuhan gula aren yang manis, creamy, dan bikin mood makin nikmat untuk menemani hari.",
         ingredients: ["Kopi bubuk pilihan", "Susu cair", "Gula aren", "Es batu"],
@@ -113,6 +153,87 @@ const menuItems = [
 
 // Ambil Keranjang dari localStorage agar tidak hilang saat pindah halaman
 let cart = JSON.parse(localStorage.getItem('umkm_cart')) || {};
+let cartMinimizeTimer;
+
+function setCartMinimized(shouldMinimize) {
+    const floatingBar = document.getElementById('floatingCart');
+    if (!floatingBar || floatingBar.classList.contains('minimized') === shouldMinimize) return;
+
+    if (floatingBar._cartAnimation) floatingBar._cartAnimation.cancel();
+    floatingBar.classList.add('cart-motion');
+    const fadeOut = floatingBar.animate([
+        { opacity: 1, transform: 'scale(1)' },
+        { opacity: 0, transform: 'scale(0.92)' }
+    ], {
+        duration: 220,
+        easing: 'ease-in',
+        fill: 'both'
+    });
+
+    floatingBar._cartAnimation = fadeOut;
+    fadeOut.onfinish = () => {
+        floatingBar.style.opacity = '0';
+        floatingBar.style.transform = 'scale(0.92)';
+        fadeOut.cancel();
+        floatingBar.classList.toggle('minimized', shouldMinimize);
+
+        if (shouldMinimize) {
+            floatingBar.style.transform = '';
+            floatingBar.style.opacity = '';
+            const icon = floatingBar.querySelector('.cart-minimize-btn');
+            const iconAnimation = icon ? icon.animate([
+                { opacity: 0, transform: 'scale(0.7)' },
+                { opacity: 1, transform: 'scale(1)' }
+            ], {
+                duration: 220,
+                easing: 'cubic-bezier(.2, .8, .2, 1)',
+                fill: 'both'
+            }) : null;
+
+            floatingBar._cartAnimation = iconAnimation;
+            if (!iconAnimation) {
+                floatingBar._cartAnimation = null;
+                floatingBar.classList.remove('cart-motion');
+            } else {
+                iconAnimation.onfinish = () => {
+                    iconAnimation.cancel();
+                    floatingBar._cartAnimation = null;
+                    floatingBar.classList.remove('cart-motion');
+                };
+            }
+            return;
+        }
+
+        const fadeIn = floatingBar.animate([
+            { opacity: 0, transform: 'scale(0.92)' },
+            { opacity: 1, transform: 'scale(1)' }
+        ], {
+            duration: 280,
+            easing: 'cubic-bezier(.2, .8, .2, 1)',
+            fill: 'both'
+        });
+
+        floatingBar._cartAnimation = fadeIn;
+        fadeIn.onfinish = () => {
+            fadeIn.cancel();
+            floatingBar.style.opacity = '';
+            floatingBar.style.transform = '';
+            floatingBar._cartAnimation = null;
+            floatingBar.classList.remove('cart-motion');
+        };
+    };
+}
+
+function expandCartSummary() {
+    const floatingBar = document.getElementById('floatingCart');
+    if (!floatingBar) return;
+
+    setCartMinimized(false);
+    clearTimeout(cartMinimizeTimer);
+    cartMinimizeTimer = setTimeout(() => {
+        if (Object.keys(cart).length > 0) setCartMinimized(true);
+    }, 4500);
+}
 
 // FUNGSI RENDER MENU (Khusus index.html)
 function renderMenu(items) {
@@ -136,14 +257,25 @@ function renderMenu(items) {
             <div class="card-body">
                 <h3 class="card-title">${item.name}</h3>
                 <p class="card-desc">${item.shortDesc}</p>
+                <div class="card-rating" aria-label="Rating ${item.rating} dari 5 bintang">
+                    <span class="card-rating-stars">★★★★★</span>
+                    <strong>${item.rating.toFixed(1)}</strong>
+                </div>
                 <div class="card-footer">
                     <span class="card-price">Rp ${item.price.toLocaleString('id-ID')}</span>
-                    <button class="add-btn" data-id="${item.id}">+ Tambah</button>
+                    <div class="menu-actions">
+                        <a href="review.html" class="review-btn">Review</a>
+                        <button class="add-btn" data-id="${item.id}">+ Tambah</button>
+                    </div>
                 </div>
             </div>
         `;
 
         card.addEventListener('click', (event) => {
+            if (event.target.closest('.review-btn')) {
+                event.stopPropagation();
+                return;
+            }
             if (event.target.closest('.add-btn')) {
                 event.stopPropagation();
                 addToCart(item.id);
@@ -163,6 +295,7 @@ function addToCart(id) {
 
     cart[id] = (cart[id] || 0) + 1;
     saveAndRefreshCart();
+    expandCartSummary();
     showCartAddNotification(item.name, cart[id]);
 }
 
@@ -244,23 +377,6 @@ function openProductModal(itemId) {
     modal.querySelector('.product-desc').textContent = item.desc;
     modal.querySelector('.product-highlight').textContent = item.highlight;
 
-        function sendFeedbackToWhatsApp(event) {
-            event.preventDefault();
-
-            const name = document.getElementById('feedbackName').value.trim();
-            const contact = document.getElementById('feedbackContact').value.trim();
-            const message = document.getElementById('feedbackMessage').value.trim();
-
-            if (!name || !contact || !message) {
-                showInlineAlert('Nama, kontak, dan pesan wajib diisi.');
-                return;
-            }
-
-            const text = `*KRITIK & SARAN - Penagisa Food Corner*\n\n*Nama:* ${name}\n*Kontak:* ${contact}\n*Pesan:*\n${message}`;
-            window.open(`https://wa.me/${NOMOR_WA_UMKM}?text=${encodeURIComponent(text)}`, '_blank');
-            document.getElementById('feedbackForm').reset();
-        }
-
     const list = modal.querySelector('.ingredient-list');
     list.innerHTML = item.ingredients.map(i => `<li>${i}</li>`).join('');
 
@@ -306,6 +422,116 @@ function closeProductModal() {
     setTimeout(() => {
         modal.classList.remove('active', 'is-closing');
     }, 200);
+}
+
+function sendFeedbackToWhatsApp(event) {
+    event.preventDefault();
+
+    const name = document.getElementById('feedbackName').value.trim();
+    const contact = document.getElementById('feedbackContact').value.trim();
+    const message = document.getElementById('feedbackMessage').value.trim();
+
+    if (!name || !contact || !message) {
+        showInlineAlert('Nama, kontak, dan pesan wajib diisi.');
+        return;
+    }
+
+    const text = `*KRITIK & SARAN - Penagisa Food Corner*\n\n*Nama:* ${name}\n*Kontak:* ${contact}\n*Pesan:*\n${message}`;
+    window.open(`https://wa.me/${NOMOR_WA_UMKM}?text=${encodeURIComponent(text)}`, '_blank');
+    document.getElementById('feedbackForm').reset();
+}
+
+function renderReviews(highlightLatest = false) {
+    const reviewList = document.getElementById('reviewList');
+    if (!reviewList) return;
+
+    const storedReviews = JSON.parse(localStorage.getItem('umkm_reviews')) || [];
+    const reviews = storedReviews.length > 0 ? storedReviews : DEFAULT_REVIEWS;
+    reviewList.innerHTML = '';
+
+    if (reviews.length === 0) {
+        reviewList.innerHTML = '<p class="review-empty">Belum ada review. Jadilah yang pertama!</p>';
+        return;
+    }
+
+    reviews.forEach((review, index) => {
+        const item = document.createElement('article');
+        item.className = `review-item${highlightLatest && index === 0 ? ' is-new' : ''}`;
+        item.innerHTML = `
+            <div class="review-item-header">
+                <div>
+                    <div class="review-item-name"></div>
+                    <div class="review-item-food"></div>
+                </div>
+                <div class="review-item-stars" aria-label="${review.rating} dari 5 bintang">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
+            </div>
+            <p class="review-item-message"></p>
+        `;
+        item.querySelector('.review-item-name').textContent = review.name;
+        item.querySelector('.review-item-food').textContent = review.food;
+        item.querySelector('.review-item-message').textContent = review.message;
+        reviewList.appendChild(item);
+    });
+}
+
+function setupReviewForm() {
+    const form = document.getElementById('reviewForm');
+    if (!form) return;
+
+    const stars = form.querySelectorAll('.star-btn');
+    const ratingInput = document.getElementById('reviewRating');
+    stars.forEach((star) => {
+        star.addEventListener('click', () => {
+            const rating = Number(star.dataset.rating);
+            ratingInput.value = rating;
+            stars.forEach((button) => {
+                button.classList.toggle('is-selected', Number(button.dataset.rating) <= rating);
+                button.setAttribute('aria-checked', Number(button.dataset.rating) === rating ? 'true' : 'false');
+            });
+        });
+    });
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const rating = Number(ratingInput.value);
+        if (!rating) {
+            showInlineAlert('Silakan pilih rating bintang terlebih dahulu.');
+            return;
+        }
+
+        const storedReviews = JSON.parse(localStorage.getItem('umkm_reviews')) || [];
+        const reviews = storedReviews.length > 0 ? storedReviews : [...DEFAULT_REVIEWS];
+        reviews.unshift({
+            name: document.getElementById('reviewName').value.trim(),
+            food: document.getElementById('reviewFood').value,
+            rating,
+            message: document.getElementById('reviewMessage').value.trim()
+        });
+        localStorage.setItem('umkm_reviews', JSON.stringify(reviews));
+        form.reset();
+        ratingInput.value = '0';
+        stars.forEach((button) => button.classList.remove('is-selected'));
+        renderReviews(true);
+        showReviewThankYou();
+    });
+}
+
+function showReviewThankYou() {
+    const popup = document.getElementById('reviewThankYou');
+    if (!popup) return;
+
+    popup.classList.add('is-visible');
+    popup.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('review-popup-open');
+}
+
+function closeReviewThankYou() {
+    const popup = document.getElementById('reviewThankYou');
+    if (!popup) return;
+
+    popup.classList.remove('is-visible');
+    popup.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('review-popup-open');
 }
 
 // PERBAHARUI TAMPILAN KERANJANG
@@ -411,8 +637,13 @@ function updateCartUI() {
 
     const floatingBar = document.getElementById("floatingCart");
     if (floatingBar) {
-        if (totalQty > 0) floatingBar.classList.remove("hidden");
-        else floatingBar.classList.add("hidden");
+        if (totalQty > 0) {
+            floatingBar.classList.remove("hidden");
+        } else {
+            floatingBar.classList.add("hidden");
+            setCartMinimized(false);
+            clearTimeout(cartMinimizeTimer);
+        }
     }
 }
 
@@ -625,9 +856,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (hasSeenGate) {
             gate.classList.add('is-hidden');
             document.body.classList.remove('gate-open');
+            document.body.classList.add('gate-ready');
         } else {
             gate.classList.remove('is-hidden');
             document.body.classList.add('gate-open');
+            startMenuIntro(gate);
         }
     }
 
@@ -638,7 +871,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     renderMenu(menuItems);
+    setupReviewForm();
+    renderReviews();
+    document.querySelectorAll('[data-close-review-thank-you]').forEach((button) => {
+        button.addEventListener('click', closeReviewThankYou);
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeReviewThankYou();
+    });
     updateCartUI();
+    if (Object.keys(cart).length > 0) expandCartSummary();
     // Setup orderType visibility handling (show address only for Delivery)
     const orderSelect = document.getElementById('orderType');
     const addressGroup = document.getElementById('addressGroup');

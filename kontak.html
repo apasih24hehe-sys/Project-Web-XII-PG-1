@@ -18,12 +18,13 @@
 
     <header>
         <div class="nav-container">
-            <a href="index.html" class="logo"><i class="fa-solid fa-utensils"></i> Penagisa Food Corner</a>
+            <a href="index.html" class="logo"><img class="brand-logo" src="https://files.catbox.moe/qk265j.png" alt="Logo Penagisa Food Corner"> Penagisa Food Corner</a>
             <nav class="nav-menu">
                 <span class="nav-indicator" aria-hidden="true"></span>
                 <a href="index.html" class="nav-link">Menu</a>
                 <a href="info.html" class="nav-link">Info</a>
                 <a href="alamat.html" class="nav-link">Lokasi</a>
+                <a href="review.html" class="nav-link">Review</a>
                 <a href="kontak.html" class="nav-link active">Kontak</a>
             </nav>
             <button class="theme-toggle" onclick="toggleTheme()" aria-label="Aktifkan mode gelap" title="Ganti tema">
@@ -40,6 +41,9 @@
         <div class="grid-2">
             <div>
                 <h2 style="font-size:16px; margin-bottom:12px;">Kontak Cepat</h2>
+            <button class="cart-minimize-btn" onclick="expandCartSummary();" aria-label="Tampilkan keranjang" title="Tampilkan keranjang">
+                <i class="fa-solid fa-cart-shopping"></i>
+            </button>
                 
                 <a href="https://wa.me/6282223346091" target="_blank" class="contact-card-btn">   <!-- Ganti nomor WA DISINI BOS -->
                     <div style="display:flex; align-items:center; gap:12px;">
@@ -52,12 +56,12 @@
                     <i class="fa-solid fa-arrow-right-long" style="color:var(--text-muted);"></i>
                 </a>
 
-                <a href="mailto:dapurumkm.official@gmail.com" class="contact-card-btn">
+                <a href="mailto:bazarpfcofficial@gmail.com" class="contact-card-btn">
                     <div style="display:flex; align-items:center; gap:12px;">
                         <div class="contact-icon" style="background:var(--primary);"><i class="fa-solid fa-envelope"></i></div>
                         <div>
                             <div style="font-weight:700; font-size:14px;">Email Resmi</div>
-                            <div style="font-size:12px; color:var(--text-muted);">dapurumkm.official@gmail.com</div>
+                            <div style="font-size:12px; color:var(--text-muted);">bazarpfcofficial@gmail.com</div>
                         </div>
                     </div>
                     <i class="fa-solid fa-arrow-right-long" style="color:var(--text-muted);"></i>
@@ -90,8 +94,9 @@
                 </div>
             </div>
 
-            <!-- Form Pesan Singkat -->
-            <div class="info-card">
+            <div>
+                <!-- Form Pesan Singkat -->
+                <div class="info-card">
                 <h3><i class="fa-solid fa-paper-plane"></i> Kirim Pesan / Kritik & Saran</h3>
                 <form id="feedbackForm" onsubmit="sendFeedbackToWhatsApp(event)">
                      <div class="feedback-form-fields">
@@ -110,6 +115,7 @@
                     <button type="submit" style="width:100%; background:var(--primary); color:white; border:none; padding:10px; border-radius:20px; font-weight:700; cursor:pointer;">Kirim Pesan</button>
                      </div>
                 </form>
+                </div>
             </div>
         </div>
 
@@ -164,7 +170,7 @@
     <footer class="site-footer">
         <div class="footer-inner">
             <div class="footer-brand">
-                <div class="footer-logo"><i class="fa-solid fa-utensils"></i></div>
+                <div class="footer-logo"><img class="brand-logo" src="https://files.catbox.moe/qk265j.png" alt="Logo Penagisa Food Corner"></div>
                 <div>
                     <h3>Penagisa Food Corner</h3>
                     <p>Menu sehat, nikmat, dan siap dipesan.</p>

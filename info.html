@@ -17,12 +17,13 @@
 
     <header>
         <div class="nav-container">
-            <a href="index.html" class="logo"><i class="fa-solid fa-utensils"></i> Penagisa Food Corner</a>
+            <a href="index.html" class="logo"><img class="brand-logo" src="https://files.catbox.moe/qk265j.png" alt="Logo Penagisa Food Corner"> Penagisa Food Corner</a>
             <nav class="nav-menu">
                 <span class="nav-indicator" aria-hidden="true"></span>
                 <a href="index.html" class="nav-link">Menu</a>
                 <a href="info.html" class="nav-link active">Info</a>
                 <a href="alamat.html" class="nav-link">Lokasi</a>
+                <a href="review.html" class="nav-link">Review</a>
                 <a href="kontak.html" class="nav-link">Kontak</a>
             </nav>
             <button class="theme-toggle" onclick="toggleTheme()" aria-label="Aktifkan mode gelap" title="Ganti tema">
@@ -34,27 +35,27 @@
     <div class="page-container">
         <!-- Hero Banner -->
         <div class="hero-banner">
-            <h2>Rasa Autentik Kuliner Rumahan</h2>
-            <p>Dibuat segar setiap hari dengan bumbu pilihan dan kasih sayang.</p>
+            <h2>Kenalan Dulu Yuk!</h2>
+            <p>Penagisa Food Corner hadir dengan berbagai pilihan makanan dan minuman untuk membuat acara Anda semakin seru.</p>
         </div>
 
         <!-- Statistik -->
         <div class="grid-3">
-            <div class="stat-box">
+            <a href="review.html" class="stat-box stat-link" aria-label="Lihat review pelanggan">
                 <i class="fa-solid fa-face-smile"></i>
-                <div class="stat-number">1.500+</div>
+                <div class="stat-number">150+</div>
                 <div class="stat-label">Pelanggan Puas</div>
-            </div>
-            <div class="stat-box">
+            </a>
+            <a href="index.html" class="stat-box stat-link" aria-label="Lihat pilihan menu dan pesan">
                 <i class="fa-solid fa-bowl-food"></i>
-                <div class="stat-number">20+</div>
+                <div class="stat-number">4</div>
                 <div class="stat-label">Pilihan Menu</div>
-            </div>
-            <div class="stat-box">
+            </a>
+            <a href="review.html" class="stat-box stat-link" aria-label="Lihat rating dan ulasan pelanggan">
                 <i class="fa-solid fa-star"></i>
                 <div class="stat-number">4.9 / 5</div>
                 <div class="stat-label">Rating Ulasan</div>
-            </div>
+            </a>
         </div>
 
         <!-- Keunggulan Grid -->
@@ -78,20 +79,7 @@
             </div>
         </div>
 
-        <!-- Testimonial Pelanggan -->
-        <h2 style="font-size:18px; margin:25px 0 15px;">Kata Mereka</h2>
-        <div class="grid-2">
-            <div class="info-card" style="margin-bottom:0;">
-                <p style="font-style:italic;">“Ayam Geprek Sambal Koreknya benar-benar ketagihan! Pedasnya pas dan ayamnya renyah banget.”</p>
-                <p style="margin-top:10px; font-weight:700; color:var(--text-dark);">— Anita, Kebon Jeruk</p>
-            </div>
-            <div class="info-card" style="margin-bottom:0;">
-                <p style="font-style:italic;">“Pesan buat acara arisan rumah, semua tamu suka sama Dimsum dan Es Kopi Susunya. Pengiriman tepat waktu.”</p>
-                <p style="margin-top:10px; font-weight:700; color:var(--text-dark);">— Pak Budi, Jakarta Barat</p>
-            </div>
-        </div>
-    </div>
-
+        
     <!-- MODAL POPUP KERANJANG -->
     <div class="modal-overlay" id="cartModal">
         <div class="modal-content">
@@ -128,9 +116,12 @@
     <footer class="site-footer">
         <div class="footer-inner">
             <div class="footer-brand">
-                <div class="footer-logo"><i class="fa-solid fa-utensils"></i></div>
+                <div class="footer-logo"><img class="brand-logo" src="https://files.catbox.moe/qk265j.png" alt="Logo Penagisa Food Corner"></div>
                 <div>
                     <h3>Penagisa Food Corner</h3>
+                <button class="cart-minimize-btn" onclick="expandCartSummary();" aria-label="Tampilkan keranjang" title="Tampilkan keranjang">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </button>
                     <p>Menu sehat, nikmat, dan siap dipesan.</p>
                 </div>
             </div>
